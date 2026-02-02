@@ -19,7 +19,7 @@ namespace ToolKit
   {
     m_uiPass              = MakeNewPtr<ForwardRenderPass>();
     // TODO(erendgrmnc): Gamma pass removed - causes white texture on macOS
-    // m_gammaPass           = MakeNewPtr<GammaTonemapFxaaPass>();
+    m_gammaPass           = MakeNewPtr<GammaTonemapFxaaPass>();
     m_viewport            = MakeNewPtr<GameViewport>((float) screenSize.x, (float) screenSize.y);
     m_splashScreen        = MakeNewPtr<UILayer>(LayerPath("ToolKit/splash-screen.layer"));
     m_resolvedFramebuffer = MakeNewPtr<Framebuffer>();
@@ -31,15 +31,13 @@ namespace ToolKit
       m_uiPass->m_params.Cam = uiMan->GetUICamera();
     }
 
-    m_uiPass->m_params.FrameBuffer = m_viewport->m_framebuffer;
+    m_uiPass->m_params.FrameBuffer              = m_viewport->m_framebuffer;
 
-    // TODO(erendgrmnc): Gamma pass removed - causes white texture on macOS
-    // m_gammaPass = MakeNewPtr<GammaTonemapFxaaPass>();
-    // m_gammaPass->m_params.enableGammaCorrection = GetRenderSystem()->IsGammaCorrectionNeeded();
-    // m_gammaPass->m_params.enableTonemapping = false;
-    // m_gammaPass->m_params.enableFxaa = false;
-    // m_gammaPass->m_params.screenSize = Vec2((float) screenSize.x, (float) screenSize.y);
-    // m_gammaPass->m_params.frameBuffer = m_viewport->m_framebuffer;
+    m_gammaPass->m_params.enableGammaCorrection = GetRenderSystem()->IsGammaCorrectionNeeded();
+    m_gammaPass->m_params.enableTonemapping     = false;
+    m_gammaPass->m_params.enableFxaa            = false;
+    m_gammaPass->m_params.screenSize            = Vec2((float) screenSize.x, (float) screenSize.y);
+    m_gammaPass->m_params.frameBuffer           = m_viewport->m_framebuffer;
   }
 
   void SplashScreenRenderPath::PreRender(Renderer* renderer)
@@ -69,10 +67,10 @@ namespace ToolKit
     m_passArray.clear();
     m_passArray.push_back(m_uiPass);
     // TODO(erendgrmnc): Gamma pass removed - causes white texture on macOS
-    // if (m_gammaPass->IsEnabled())
-    // {
-    //   m_passArray.push_back(m_gammaPass);
-    // }
+    if (m_gammaPass->IsEnabled())
+    {
+      m_passArray.push_back(m_gammaPass);
+    }
   }
 
   void SplashScreenRenderPath::Render(Renderer* renderer)
